@@ -15,9 +15,9 @@ class RabbitMQHelper {
       this.channels = {}
     } catch (error) {
       console.log('Unable to connect over RabbitMQ broker')
-      
       console.log(error)
     }
+    console.log('Connection Established!')
   }
 
   async disconnect () {
