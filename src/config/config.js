@@ -4,7 +4,8 @@ module.exports = {
     password: process.env.RABBITMQ_PASSWORD || 'guest',
     queue: process.env.RABBITMQ_QUEUE || 'general_queue',
     host: process.env.PUBSUB_RABBITMQ_SERVICE_HOST || 'localhost',
-    port: process.env.PUBSUB_RABBITMQ_SERVICE_PORT_AMQP || 5672
+    port: process.env.PUBSUB_RABBITMQ_SERVICE_PORT_AMQP || 5672,
+    protocol: process.env.RABBITMQ_PROTOCOL  || 'amqp'
   },
   port: process.env.PORT || 3000,
   frequency: process.env.FREQUENCY || 30000,

@@ -3,3 +3,5 @@ class Producer {
     require('./processor.js')
   }
 }
+
+module.exports = new Producer()

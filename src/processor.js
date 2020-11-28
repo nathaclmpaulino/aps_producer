@@ -1,23 +1,10 @@
 const moment         = require('moment')
 const config         = require('./config/config')
 const data           = require('./data/dataset.json')
+const rabbitMQClient = require('./utils/rabbitmq')
 
-const RabbitMQClient = require('node-rabbitmq-client') 
-
-const rabbitMQConfig = {
-  host: config.rabbitmq.host,
-  port: config.rabbitmq.port,
-  username: config.rabbitmq.username,
-  password: config.rabbitmq.password,
-  protocol: config.rabbitmq.protocol,
-  defaultQueueFeatures: { durable: true },
-}
-
-const rabbitMQClient = new RabbitMQClient(rabbitMQConfig)
-
-var step = function () {
+var step = async function() {
   try {
-    
     const timestamp = moment()
     const arrPoints    = []
     const dataFormat = timestamp.format('DDMMYYYY')
@@ -32,7 +19,7 @@ var step = function () {
     }
     
     for (let i = 0; i < config.maxPoints; i++) {
-      positionOverObj     = Math.random() * data.length()
+      positionOverObj     = Math.floor(Math.random() * 500)
 
       point.timestamp     = timestamp.unix()
       point.day           = dataFormat
@@ -43,12 +30,16 @@ var step = function () {
 
       arrPoints.push(point)
     }
-
+        
     try {
-      rabbitMQClient.publish({ queue: { name: config.rabbitmq.queue }}, JSON.stringify(arrPoints))
+      await rabbitMQClient.connect()
+      await rabbitMQClient.createQueue(config.rabbitmq.queue)
+      await rabbitMQClient.publish(config.rabbitmq.queue, Buffer.from(JSON.stringify(arrPoints)))
     } catch (error) {
       console.log('Unable to publish into RabbitMQ Queue')
+      console.log(error)
     }
+  
   } catch (error) {
     console.error(error)
   }
