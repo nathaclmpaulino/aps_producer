@@ -1,16 +1,22 @@
 const moment         = require('moment')
+const config         = require('./config/config')
 const data           = require('./data/dataset.json')
-const rabbitmqClient = require('node-rabbitmq-client') 
 
-let numberPoints = 0
-const freq = 30000 // A cada 30seg os pontos vão sofrer um push para o rabbitmq
-const MAX_POINTS = 21
+const RabbitMQClient = require('node-rabbitmq-client') 
+
+const rabbitMQConfig = {
+  host: config.rabbitmq.host,
+  port: config.rabbitmq.port,
+  username: config.rabbitmq.username,
+  password: config.rabbitmq.password,
+  protocol: config.rabbitmq.protocol,
+  defaultQueueFeatures: { durable: true },
+}
+
+const rabbitMQClient = new RabbitMQClient(rabbitMQConfig)
 
 var step = function () {
   try {
-
-    if (numberPoints > MAX_POINTS_IN_ONE_MESSAGE)
-      numberPoints = 0
     
     const timestamp = moment()
     const arrPoints    = []
@@ -18,20 +24,34 @@ var step = function () {
 
     var point = {
       timestamp: '',
+      day: '',
+      light: '',
       temperature: '',
       humidity: '',
-      luminosity: ''
+      motion: ''
+    }
+    
+    for (let i = 0; i < config.maxPoints; i++) {
+      positionOverObj     = Math.random() * data.length()
+
+      point.timestamp     = timestamp.unix()
+      point.day           = dataFormat
+      point.light         = data[positionOverObj].light 
+      point.temperature   = data[positionOverObj].temp
+      point.humidity      = data[positionOverObj].humidity
+      point.motion        = data[positionOverObj].motion
+
+      arrPoints.push(point)
     }
 
-    for (let i = 0; i < (data || []).length; i++) {
-      point.timestamp   = timestamp.unix()
-      point.temperature = data[i] 
+    try {
+      rabbitMQClient.publish({ queue: { name: config.rabbitmq.queue }}, JSON.stringify(arrPoints))
+    } catch (error) {
+      console.log('Unable to publish into RabbitMQ Queue')
     }
-
-    // Chamada do rabbimq --> JSON.stringfy(JSON)
   } catch (error) {
     console.error(error)
   }
 }
 
-module.exports = setInterval(step, frequency)
+module.exports = setInterval(step, config.frequency)
