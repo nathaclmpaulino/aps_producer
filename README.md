@@ -6,7 +6,12 @@ Este produtor utiliza dados processados no arquivo em src/data/dataset.js para c
 
 ## Env variables
 
+RABBITMQ_HOST=
+RABBITMQ_PORT=
+RABBITMQ_PROTOCOL=
 RABBITMQ_USERNAME=
 RABBITMQ_PASSWORD=
 RABBITMQ_QUEUE=
+FREQUENCY=
+MAX_POINTS_IN_ONE_MESSAGE=
 PORT=
