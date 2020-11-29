@@ -35,15 +35,15 @@ var step = async function() {
     try {
       await rabbitMQClient.connect()
       await rabbitMQClient.createQueue(config.rabbitmq.queue)
-      await rabbitMQClient.publish(config.rabbitmq.queue, Buffer.from(JSON.stringify(arrPoints)))
+      await rabbitMQClient.publish(config.rabbitmq.queue, arrPoints)
     } catch (error) {
+      console.error(error)
       throw new Error('Unable to publish into RabbitMQ Queue')
     }
-    console.log('Published points over ' + config.rabbitmq.queue + 'queue')
+    console.log('Published points over ' + config.rabbitmq.queue + ' queue')
   } catch (error) {
     console.error(error)
   }
-  await rabbitMQClient.disconnect()
 }
 
 module.exports = setInterval(step, config.frequency)

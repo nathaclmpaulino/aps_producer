@@ -10,7 +10,8 @@ class RabbitMQHelper {
   async connect () {
     const brokerUrl = `${config.rabbitmq.protocol}://${config.rabbitmq.username}:${config.rabbitmq.password}@${config.rabbitmq.host}:${config.rabbitmq.port}`
     try {
-      console.log('Trying to connect at RabbitMQ')
+      console.log('Trying to connect at RabbitMQ at')
+      console.log(brokerUrl)
       this.conn = await amqp.connect(brokerUrl)
       this.channels = {}
     } catch (error) {
@@ -31,9 +32,9 @@ class RabbitMQHelper {
    * @param {String} type 
    */
   
-  async createQueue (queueName, type) {
+  async createQueue (queueName) {
     const channel = await this.conn.createChannel()
-    await channel.assertExchange(queueName, type)
+    await channel.assertQueue(queueName)
     this.channels[queueName] = channel
   }
 
@@ -53,11 +54,11 @@ class RabbitMQHelper {
    * @param {Buffer} message 
   */
   
-  publish (queueName, message) {
+  async publish (queueName, message) {
     if (!this.queueExists(queueName)) {
       throw new Error ('Queue not created')
     }
-    this.channels[queueName].publish(queueName, '', message)
+    await this.channels[queueName].sendToQueue(queueName, Buffer.from(JSON.stringify(message)))
   }
 
 
