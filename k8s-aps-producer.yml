@@ -5,12 +5,12 @@ metadata:
   namespace: default
 data:
   RABBITMQ_QUEUE: 'HeatSensor'
-  RABBITMQ_HOST: rabbitmq-broker:5672
+  RABBITMQ_HOST: rabbitmq-broker
   RABBITMQ_PORT: "5672"
   RABBITMQ_PROTOCOL: "amqp"
   PORT: "3000"
   FREQUENCY: "30000"
-  MAX_POINTS_IN_ONE_MESSAGE: "20"
+  MAX_POINTS_IN_ONE_MESSAGE: "1"
 ---
 apiVersion: v1
 kind: Service

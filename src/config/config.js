@@ -9,5 +9,5 @@ module.exports = {
   },
   port: process.env.PORT || 3000,
   frequency: process.env.FREQUENCY || 30000,
-  maxPoints: process.env.MAX_POINTS_IN_ONE_MESSAGE || 20
+  maxPoints: process.env.MAX_POINTS_IN_ONE_MESSAGE || 1
 }
